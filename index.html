@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passaporte Pixel: A Jornada dos Biomas ✈️</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+<!-- TELA INICIAL -->
+<div class="tela-inicial" id="telaInicial">
+    <h1 class="titulo-principal">PASSPORTE PIXEL<br>A JORNADA DOS BIOMAS</h1>
+    <div class="passaporte-menu">
+        <img src="passaporte-pixel.png" alt="Passaporte Pixel Art">
+    </div>
+    <button class="btn-comecar" onclick="iniciarJogo()">COMEÇAR VIAGEM ✈️</button>
+</div>
+
+<!-- TELA DO MAPA -->
+<div class="tela-mapa" id="telaMapa">
+    <button class="btn-voltar" onclick="voltarInicio()">← VOLTAR</button>
+    <h2 class="titulo-mapa">SELECIONE SEU DESTINO</h2>
+    <div class="mapa-fundo">
+        <div class="ponto-pais liberado" id="ponto-br" onclick="escolherPais('br')">BR</div>
+        <div class="ponto-pais bloqueado" id="ponto-es" onclick="escolherPais('es')">ES</div>
+        <div class="ponto-pais bloqueado" id="ponto-fr" onclick="escolherPais('fr')">FR</div>
+        <div class="ponto-pais bloqueado" id="ponto-de" onclick="escolherPais('de')">DE</div>
+        <div class="ponto-pais bloqueado" id="ponto-it" onclick="escolherPais('it')">IT</div>
+        <div class="ponto-pais bloqueado" id="ponto-gb" onclick="escolherPais('gb')">GB</div>
+        <div class="ponto-pais bloqueado" id="ponto-ar" onclick="escolherPais('ar')">AR</div>
+        <div class="ponto-pais bloqueado" id="ponto-uy" onclick="escolherPais('uy')">UY</div>
+        <div class="ponto-pais bloqueado" id="ponto-us" onclick="escolherPais('us')">US</div>
+        <div class="aviao-mapa" id="aviaoMapa">✈️</div>
+    </div>
+    <div class="aviso-bloqueado" id="avisoBloqueado">🔒 PAÍS BLOQUEADO!<br>Conclua o anterior primeiro!</div>
+</div>
+
+<!-- CENA DO AEROPORTO -->
+<div class="cena-aeroporto" id="cenaAeroporto">
+    <button class="btn-voltar" onclick="voltarMapa()">← VOLTAR AO MAPA</button>
+    <h2 class="nome-aeroporto" id="nomeAeroporto">AEROPORTO MARIZINHA</h2>
+    
+    <div class="mesa"></div>
+    <div class="passaporte-na-mesa" id="passaporteMesa"></div>
+    <div class="notebook" id="notebook">
+        <div class="tela-inicial-notebook" id="telaInicialNotebook">CLIQUE PARA INICIAR<br>O DESAFIO 📝</div>
+        <div class="conteudo-quiz" id="quiz">
+            <div class="cabecalho-quiz">
+                <span id="nomePais">PAÍS</span>
+                <span id="progresso">1/4</span>
+            </div>
+            <div class="pergunta" id="textoPergunta"></div>
+            <div class="opcoes" id="areaOpcoes"></div>
+            <div class="feedback" id="feedback"></div>
+        </div>
+    </div>
+    
+    <div class="funcionario" id="funcionario"></div>
+    <div class="portao" id="portao" onclick="voltarMapa()">
+        <span id="numeroPortao">PORTÃO 03</span><br>VOLTAR AO MAPA
+    </div>
+    <div class="aviso-geral" id="avisoGeral"></div>
+</div>
+
+<script>
+const ordemPaises = ['br', 'es', 'fr', 'de', 'it', 'gb', 'ar', 'uy', 'us'];
+let indiceLiberado = 0;
+
+const nomesAeroportos = {
+    br: "AEROPORTO MARIZINHA",
+    es: "AEROPORTO DE MADRI-BARAJAS",
+    fr: "AEROPORTO PARIS-CHARLES DE GAULLE",
+    de: "AEROPORTO DE FRANCOFURTE",
+    it: "AEROPORTO DE ROMA-FIUMICINO",
+    gb: "AEROPORTO DE LONDRES-HEATHROW",
+    ar: "AEROPORTO DE BUENOS AIRES-EZEIZA",
+    uy: "AEROPORTO DE MONTEVIDEO-CARRASCO",
+    us: "AEROPORTO NOVA YORK-JOHN F. KENNEDY"
+};
+
+function gerarPortaoAleatorio() {
+    const num = Math.floor(Math.random() * 99) + 1;
+    return `PORTÃO ${num.toString().padStart(2, '0')}`;
+}
+
+const bancoPaises = {
+    br: {nome: "BRASIL", perguntas: [
+        {t: "Qual é a principal ameaça atual à biodiversidade da Floresta Amazônica?", o: ["Mudanças climáticas naturais", "Desmatamento para agropecuária e mineração", "Excesso de chuvas", "Introdução de abelhas europeias"], c: 1},
+        {t: "O Cerrado abrange quantos por cento do território brasileiro?", o: ["Menos de 5%", "Aproximadamente 22%", "Cerca de 50%", "Mais de 70%"], c: 1},
+        {t: "Qual é o único bioma brasileiro presente em todas as regiões do país?", o: ["Amazônia", "Caatinga", "Mata Atlântica", "Cerrado"], c: 2},
+        {t: "Por que a Caatinga possui uma grande variedade de plantas espinhosas e folhas grossas?", o: ["Para se defender de predadores", "Para armazenar água e evitar perda de umidade", "Para atrair polinizadores", "Para proteger-se do frio"], c: 1}
+    ]},
+    es: {nome: "ESPANHA", perguntas: [
+        {t: "A região da Andaluzia apresenta características semelhantes a qual bioma brasileiro?", o: ["Pampa", "Cerrado", "Caatinga", "Amazônia"], c: 2},
+        {t: "Qual é o impacto da Serra Nevada no clima do sul da Espanha?", o: ["Aumenta a temperatura o ano todo", "Bloqueia a passagem de nuvens úmidas do Atlântico", "Cria chuvas constantes", "Forma geleiras permanentes"], c: 1},
+        {t: "Qual vegetação mediterrânea é típica das áreas mais secas da Espanha?", o: ["Florestas de carvalhos", "Matagais e estepes", "Manguezais", "Florestas de coníferas"], c: 1},
+        {t: "O deserto de Tabernas é consequência de qual fator?", o: ["Baixa altitude e barreiras montanhosas", "Proximidade com o Polo Norte", "Poluição industrial", "Extração de água subterrânea"], c: 0}
+    ]},
+    fr: {nome: "FRANÇA", perguntas: [
+        {t: "Por que a França possui maior diversidade de biomas que países vizinhos?", o: ["É o maior país da Europa Ocidental", "Tem litoral em dois oceanos e relevo variado", "Recebe mais calor do sol", "Não tem áreas montanhosas"], c: 1},
+        {t: "Qual é a diferença principal entre as florestas do norte e do sul da França?", o: ["Norte: sempre verde; Sul: caducifólia", "Norte: caducifólia; Sul: mediterrânea", "Sul: floresta tropical; Norte: tundra", "São exatamente iguais"], c: 1},
+        {t: "Como as montanhas dos Alpes afetam a distribuição da vegetação na França?", o: ["Impedem qualquer tipo de planta", "Criam camadas de vegetação conforme a altitude", "Deixam todo o território árido", "Fazem crescer só cactos"], c: 1},
+        {t: "Qual ameaça afeta atualmente as florestas temperadas francesas?", o: ["Geleiras", "Pragas e secas prolongadas", "Terremotos constantes", "Invasão de cactos"], c: 1}
+    ]},
+    de: {nome: "ALEMANHA", perguntas: [
+        {t: "A maioria das florestas alemãs é composta por árvores que perdem as folhas no inverno. Como são chamadas?", o: ["Perenifólias", "Caducifólias", "Cactáceas", "Palmeiras"], c: 1},
+        {t: "Qual é o motivo das estações bem definidas na Alemanha?", o: ["Posição na zona temperada do hemisfério norte", "Proximidade com o deserto", "Influência dos vulcões", "Correntes marítimas quentes"], c: 0},
+        {t: "Como a corrente do Atlântico Norte influencia o clima alemão?", o: ["Deixa muito frio e seco", "Aquece e torna mais úmido", "Cria neve o ano todo", "Forma desertos"], c: 1},
+        {t: "Qual é o principal desafio ambiental para as florestas da Alemanha?", o: ["Seca extrema", "Chuva ácida e doenças em árvores", "Inundações constantes", "Falta de solo fértil"], c: 1}
+    ]},
+    it: {nome: "ITÁLIA", perguntas: [
+        {t: "Por que a Itália tem clima tão diferente entre o norte e o sul?", o: ["Pela barreira dos Alpes e latitude menor no sul", "Por causa dos vulcões", "Pela distância do mar", "Por ser um país pequeno"], c: 0},
+        {t: "Quais frutos são típicos da vegetação mediterrânea italiana?", o: ["Coco e manga", "Uva, azeitona e figo", "Abacaxi e melancia", "Cacau e café"], c: 1},
+        {t: "Como a altitude muda a vegetação nos Apeninos?", o: ["Só crescem plantas rasteiras", "Vai de florestas a campos e rochas", "Só há pinheiros", "Fica igual em todos os níveis"], c: 1},
+        {t: "Qual bioma aparece em áreas mais secas da Sicília e Sardenha?", o: ["Floresta tropical", "Mata de escova mediterrânea", "Tundra", "Pantanal"], c: 1}
+    ]},
+    gb: {nome: "INGLATERRA", perguntas: [
+        {t: "Qual é o fator principal que torna o clima inglês tão chuvoso?", o: ["Correntes marítimas e ventos úmidos do Atlântico", "Muitas usinas de água", "É uma ilha muito pequena", "Fica perto do Polo Sul"], c: 0},
+        {t: "Por que há poucas florestas densas na Inglaterra atualmente?", o: ["Solo muito pobre", "Desmatamento histórico para agricultura", "Clima muito frio", "Muitos incêndios naturais"], c: 1},
+        {t: "Como as planícies da Inglaterra são usadas atualmente?", o: ["Só para conservação", "Pastagens e cultivo de cereais", "Apenas para turismo", "Para instalar painéis solares"], c: 1},
+        {t: "Qual planta é símbolo da vegetação rasteira úmida da região?", o: ["Cacto", "Heather (urze)", "Palmeira", "Eucalipto"], c: 1}
+    ]},
+    ar: {nome: "ARGENTINA", perguntas: [
+        {t: "Por que o deserto da Patagônia fica em uma área de ventos fortes?", o: ["Pela barreira dos Andes que bloqueia nuvens", "Por causa da floresta amazônica", "Por ser muito quente", "Pela proximidade com a Europa"], c: 0},
+        {t: "Qual é a diferença entre o Pampa argentino e o brasileiro?", o: ["O argentino tem mais áreas áridas e menos árvores", "São exatamente iguais", "O brasileiro é maior", "O argentino é todo deserto"], c: 0},
+        {t: "A floresta Misionária compartilha características com qual bioma brasileiro?", o: ["Caatinga", "Mata Atlântica", "Cerrado", "Pampa"], c: 1},
+        {t: "Como o relevo dos Andes altera a vegetação da Argentina?", o: ["Cria camadas desde florestas até desertos", "Deixa tudo igual", "Faz crescer só palmeiras", "Torna todo o território alagado"], c: 0}
+    ]},
+    uy: {nome: "URUGUAI", perguntas: [
+        {t: "Por que o Uruguai não forma grandes florestas naturais?", o: ["Solo raso, ventos fortes e clima úmido", "É muito seco", "Não tem água", "É muito pequeno"], c: 0},
+        {t: "Qual é a principal atividade econômica que depende do bioma Pampa?", o: ["Mineração", "Pecuária e agricultura de grãos", "Pesca industrial", "Extração de madeira"], c: 1},
+        {t: "Como a proximidade com o mar influencia o clima do Uruguai?", o: ["Diminui a variação de temperatura ao longo do ano", "Deixa muito quente", "Cria desertos", "Faz nevar todo ano"], c: 0},
+        {t: "Quais árvores são comuns nas margens dos rios uruguaios?", o: ["Cactos e suculentas", "Eucaliptos, salgueiros e figueiras", "Pinheiros do deserto", "Palmeiras da Amazônia"], c: 1}
+    ]},
+    us: {nome: "ESTADOS UNIDOS", perguntas: [
+        {t: "Qual é o motivo da grande variedade de biomas nos Estados Unidos?", o: ["Grande extensão territorial e relevo variado", "É o país mais quente do mundo", "Tem só áreas planas", "Fica todo no Polo Norte"], c: 0},
+        {t: "As pradarias do centro dos EUA são conhecidas como 'Corn Belt' por qual motivo?", o: ["Só tem plantas ornamentais", "São usadas para cultivar milho e soja em grande escala", "É uma área de deserto", "Só tem pastagens naturais"], c: 1},
+        {t: "Como as Montanhas Rochosas afetam a vegetação do oeste do país?", o: ["Bloqueiam chuvas, formando desertos a leste delas", "Deixam tudo igual", "Fazem crescer só manguezais", "Criam florestas tropicais"], c: 0},
+        {t: "Qual bioma predomina no Alasca e no norte do Canadá?", o: ["Floresta tropical", "Tundra e Floresta Boreal", "Cerrado", "Pampa"], c: 1}
+    ]}
+};
+
+let paisAtual = null, perguntaAtual = 0, notebookAberto = false;
+
+function embaralharAlternativas(pergunta) {
+    const alternativas = pergunta.o.map((texto, indice) => ({texto, correta: indice === pergunta.c}));
+    for (let i = alternativas.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [alternativas[i], alternativas[j]] = [alternativas[j], alternativas[i]];
+    }
+    return alternativas;
+}
+
+function iniciarJogo() {
+    document.getElementById('telaInicial').classList.add('esconder');
+    document.getElementById('telaMapa').classList.add('ativa');
+}
+
+function voltarInicio() {
+    document.getElementById('telaInicial').classList.remove('esconder');
+    document.getElementById('telaMapa').classList.remove('ativa');
+}
+
+function escolherPais(sigla) {
+    const indice = ordemPaises.indexOf(sigla);
+    const aviso = document.getElementById('avisoBloqueado');
+    if (indice > indiceLiberado) {
+        aviso.style.display = 'block';
+        setTimeout(() => aviso.style.display = 'none', 2500);
+        return;
+    }
+
+    const ponto = document.getElementById(`ponto-${sigla}`);
+    const aviao = document.getElementById('aviaoMapa');
+    const mapa = document.querySelector('.mapa-fundo').getBoundingClientRect();
+    const posPonto = ponto.getBoundingClientRect();
+
+    aviao.classList.add('voando');
+    aviao.style.left = '50%';
+    aviao.style.top = '50%';
+
+    setTimeout(() => {
+        const ang = Math.atan2(posPonto.top - mapa.top - mapa.height/2, posPonto.left - mapa.left - mapa.width/2) * 180 / Math.PI;
+        aviao.style.left = `${posPonto.left - mapa.left + 27}px`;
+        aviao.style.top = `${posPonto.top - mapa.top + 27}px`;
+        aviao.style.transform = `translate(-50%, -50%) rotate(${ang}deg)`;
+
+        setTimeout(() => {
+            paisAtual = sigla; perguntaAtual = 0; notebookAberto = false;
+            document.getElementById('nomeAeroporto').innerText = nomesAeroportos[sigla];
+            document.getElementById('numeroPortao').innerText = gerarPortaoAleatorio();
+            document.getElementById('telaMapa').classList.remove('ativa');
+            document.getElementById('cenaAeroporto').classList.add('ativa');
+            resetarCena();
+        }, 2200);
+    }, 500);
+}
+
+function voltarMapa() {
+    document.getElementById('cenaAeroporto').classList.remove('ativa');
+    document.getElementById('telaMapa').classList.add('ativa');
+    if (paisAtual) {
+        document.getElementById(`ponto-${paisAtual}`).classList.remove('liberado');
+        document.getElementById(`ponto-${paisAtual}`).classList.add('concluido');
+    }
+}
+
+function resetarCena() {
+    document.getElementById('notebook').classList.remove('aberto');
+    document.getElementById('telaInicialNotebook').style.display = 'block';
+    document.getElementById('quiz').style.display = 'none';
+    document.getElementById('funcionario').classList.remove('vir');
+    document.getElementById('portao').classList.remove('visivel');
+    document.getElementById('avisoGeral').style.display = 'none';
+    document.getElementById('passaporteMesa').classList.remove('visivel');
+}
+
+document.getElementById('notebook').addEventListener('click', () => {
+    if (!notebookAberto) {
+        notebookAberto = true;
+        document.getElementById('notebook').classList.add('aberto');
+        document.getElementById('telaInicialNotebook').style.display = 'none';
+        document.getElementById('quiz').style.display = 'flex';
+        carregarPergunta();
+    }
+});
+
+function carregarPergunta() {
+    const dados = bancoPaises[paisAtual];
+    const perguntaOriginal = dados.perguntas[perguntaAtual];
+    const alternativasEmbaralhadas = embaralharAlternativas(perguntaOriginal);
+
+    document.getElementById('nomePais').innerText = dados.nome;
+    document.getElementById('progresso').innerText = `${perguntaAtual + 1}/4`;
+    document.getElementById('textoPergunta').innerText = perguntaOriginal.t;
+    
+    const area = document.getElementById('areaOpcoes');
+    area.innerHTML = '';
+    document.getElementById('feedback').style.display = 'none';
+
+    alternativasEmbaralhadas.forEach((alt) => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-opcao';
+        btn.innerText = alt.texto;
+        btn.onclick = () => verificarResposta(alt.correta, btn);
+        area.appendChild(btn);
+    });
+}
+
+function verificarResposta(acertou, btn) {
+    document.querySelectorAll('.btn-opcao').forEach(b => b.style.pointerEvents = 'none');
+    const fb = document.getElementById('feedback');
+    fb.style.display = 'block';
+
+    if (acertou) {
+        btn.classList.add('correta');
+        fb.innerText = "ACERTOU! ✅";
+        fb.className = "feedback sucesso";
+        setTimeout(() => {
+            perguntaAtual++;
+            if (perguntaAtual >= 4) concluirPais();
+            else carregarPergunta();
+        }, 1500);
+    } else {
+        btn.classList.add('errada');
+        fb.innerText = "ERROU! Tente novamente ❌";
+        fb.className = "feedback erro";
+        setTimeout(() => {
+            document.querySelectorAll('.btn-opcao').forEach(b => {
+                b.style.pointerEvents = 'auto';
+                b.classList.remove('errada','correta');
+            });
+            fb.style.display = 'none';
+        }, 1500);
+    }
+}
+
+function concluirPais() {
+    const aviso = document.getElementById('avisoGeral');
+    aviso.innerText = `🎉 PARABÉNS! Concluiu o ${bancoPaises[paisAtual].nome}!`;
+    aviso.style.display = 'block';
+    document.getElementById('funcionario').classList.add('vir');
+    
+    setTimeout(() => {
+        document.getElementById('passaporteMesa').classList.add('visivel');
+    }, 1000);
+
+    setTimeout(() => {
+        document.getElementById('portao').classList.add('visivel');
+        if (indiceLiberado < ordemPaises.length - 1) {
+            indiceLiberado++;
+            const proximoPais = ordemPaises[indiceLiberado];
+            document.getElementById(`ponto-${proximoPais}`).classList.remove('bloqueado');
+            document.getElementById(`ponto-${proximoPais}`).classList.add('liberado');
+            aviso.innerText = "✅ Carimbo recebido! Próximo país liberado!";
+        } else {
+            aviso.innerText = "🏆 VOCÊ EXPLOROU TODOS OS PAÍSES! PARABÉNS!";
+        }
+    }, 2000);
+}
+</script>
+</body>
+</html>
+
