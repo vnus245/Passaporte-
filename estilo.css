@@ -74,8 +74,20 @@ body {
     position: relative;
     border: 4px solid #fff;
     border-radius: 12px;
-    background: rgba(255,255,255,0.1);
-}
+    .mapa-fundo {
+    width: 90%;
+    height: 75%;
+    margin: 2rem auto;
+    position: relative;
+    border: 4px solid #fff;
+    border-radius: 12px;
+    /* NOVO: Usa o mapa como fundo */
+    background-image: url("mapa-fundo.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    }
+    
 .ponto-pais {
     position: absolute;
     width: 50px;
